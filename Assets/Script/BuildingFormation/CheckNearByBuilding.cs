@@ -1,18 +1,32 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CheckNearByBuilding : MonoBehaviour {
+public class CheckNearByBuilding : MonoBehaviour
+{
+    // public bool isAllowedBuild = true;
 
-    void Update() {
-        CheckingBuilding();
+    void Update()
+    {
+        // CheckingBuilding();
     }
 
-    public bool CheckingBuilding() {
-        Collider[] m_HitDetect = Physics.OverlapBox(transform.position + new Vector3(0, 1.5f, 0), new Vector3(8.2f, 3.2f, 8) /2, Quaternion.identity);
-        if (m_HitDetect.Length > 0) {
-            for (int i = 0; i < m_HitDetect.Length; i++) {
-                if (m_HitDetect[i].tag == "building") {
+    public bool CheckingBuildingAllowedBuild()
+    {
+        Collider[] m_HitDetect = Physics.OverlapBox(transform.position + new Vector3(0,
+                GetComponent<BoxCollider>().center.y,
+                0),
+            new Vector3(GetComponent<BoxCollider>().size.x, 
+                GetComponent<BoxCollider>().size.y, 
+                GetComponent<BoxCollider>().size.z) / 2, Quaternion.identity);
+        if (m_HitDetect.Length > 0)
+        {
+            for (int i = 0; i < m_HitDetect.Length; i++)
+            {
+                Debug.Log(i + " : " + m_HitDetect[i].tag);
+                if (m_HitDetect[i].tag == "building")
+                {
                     return false;
                 }
             }
@@ -20,12 +34,33 @@ public class CheckNearByBuilding : MonoBehaviour {
         return true;
     }
 
-    public void BuildAction() {
+    public void BuildAction()
+    {
         GetComponent<Collider>().enabled = true;
     }
+    
 
-    private void OnDrawGizmos() {
+    // private void OnTriggerStay(Collider other)
+    // {
+    //     if (other.tag == "building")
+    //     {
+    //         isAllowedBuild = false;
+    //     }
+    //     else
+    //     {
+    //         isAllowedBuild = true;
+    //     }
+    // }
+
+    private void OnDrawGizmos()
+    {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireCube(transform.position + new Vector3(0, 1.5f, 0), new Vector3(8.2f, 3.2f, 8));
+        
+        Gizmos.DrawWireCube(transform.position + new Vector3(0, 
+            GetComponent<BoxCollider>().center.y
+            , 0), new Vector3(
+            GetComponent<BoxCollider>().size.x, 
+            GetComponent<BoxCollider>().size.y, 
+            GetComponent<BoxCollider>().size.z));
     }
 }
