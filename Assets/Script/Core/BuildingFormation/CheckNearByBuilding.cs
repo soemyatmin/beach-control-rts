@@ -5,12 +5,6 @@ using UnityEngine;
 
 public class CheckNearByBuilding : MonoBehaviour
 {
-    // public bool isAllowedBuild = true;
-
-    void Update()
-    {
-        // CheckingBuilding();
-    }
 
     public bool CheckingBuildingAllowedBuild()
     {
@@ -38,19 +32,6 @@ public class CheckNearByBuilding : MonoBehaviour
         GetComponent<Collider>().enabled = true;
     }
     
-
-    // private void OnTriggerStay(Collider other)
-    // {
-    //     if (other.tag == "building")
-    //     {
-    //         isAllowedBuild = false;
-    //     }
-    //     else
-    //     {
-    //         isAllowedBuild = true;
-    //     }
-    // }
-
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
