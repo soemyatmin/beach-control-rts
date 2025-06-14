@@ -24,7 +24,6 @@ public class CheckNearByBuilding : MonoBehaviour
         {
             for (int i = 0; i < m_HitDetect.Length; i++)
             {
-                Debug.Log(i + " : " + m_HitDetect[i].tag);
                 if (m_HitDetect[i].tag == "building")
                 {
                     return false;
