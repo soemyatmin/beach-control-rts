@@ -9,18 +9,23 @@ public class ShopBuildingButtonData
     public string ShopBuildingDescription;
     
     public int ShopBuildingDependentID;
-    public float ShopBuildingBuildDuration;
     public float ShopBuildingPrice;
+    public float ShopBuildingBuildDuration;
+    public int ShopBuildingLimit;
+    
     public Sprite Image;
 
-    public ShopBuildingButtonData(int id, string shopBuildingName, string shopBuildingDescription, int shopBuildingDependentID, float shopBuildingBuildDuration, float shopBuildingPrice, Sprite image)
+    public ShopBuildingButtonData(int id, string shopBuildingName, string shopBuildingDescription,
+        int shopBuildingDependentID, float shopBuildingPrice, float shopBuildingBuildDuration, int shopBuildingLimit,
+        Sprite image)
     {
         ID = id;
         ShopBuildingName = shopBuildingName;
         ShopBuildingDescription = shopBuildingDescription;
         ShopBuildingDependentID = shopBuildingDependentID;
-        ShopBuildingBuildDuration = shopBuildingBuildDuration;
         ShopBuildingPrice = shopBuildingPrice;
+        ShopBuildingBuildDuration = shopBuildingBuildDuration;
+        ShopBuildingLimit = shopBuildingLimit;
         Image = image;
     }
 }

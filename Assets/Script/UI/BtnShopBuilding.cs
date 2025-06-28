@@ -1,10 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class BtnShopBuilding : MonoBehaviour
 {
+    [SerializeField] private Image background;
+    [SerializeField] private TextMeshProUGUI name;
+
     [SerializeField] private Button btnToBuild;
     [SerializeField] private Button btnReadyBuild;
     [SerializeField] private Button btnCancelBuild;
@@ -16,6 +20,13 @@ public class BtnShopBuilding : MonoBehaviour
     public void Init(ShopBuildingButtonData shopBuildingButtonData)
     {
         this._shopBuildingButtonData = shopBuildingButtonData;
+        BindView();
+    }
+
+    void BindView()
+    {
+        background.sprite = _shopBuildingButtonData.Image;
+        name.text = _shopBuildingButtonData.ShopBuildingName;
     }
 
     public void OnClickToBuild()
