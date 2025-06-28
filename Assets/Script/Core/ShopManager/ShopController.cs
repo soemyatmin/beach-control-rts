@@ -32,8 +32,6 @@ public class ShopController : MonoBehaviour
 
     public void LoadShop()
     {
-        
-        Debug.Log(MasterShopBuildingButtonData.Count);
         foreach (var ele in MasterShopBuildingButtonData)
         {
             BtnShopBuilding ShopButton = Instantiate(PrefabGameObjectShopPrefab,listContent.transform).GetComponent<BtnShopBuilding>();

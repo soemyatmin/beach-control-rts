@@ -4,22 +4,6 @@ using UnityEngine;
 
 public class ImageLoader : SingletonMonoBehaviour<ImageLoader>
 {
-    public Sprite[] _sprite;
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
-    }
-
-    public void GetSprite(string spriteName)
-    {
-        
-    }
-    
     public Sprite LoadImageByName(string name)
     {
         Sprite loadedSprite = Resources.Load<Sprite>(name);
@@ -33,5 +17,4 @@ public class ImageLoader : SingletonMonoBehaviour<ImageLoader>
         }
         return null;
     }
-    
 }
