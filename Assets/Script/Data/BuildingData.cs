@@ -12,7 +12,9 @@ public class BuildingData
     public float BuildingGridY;
     public int TagWeapon;
 
-    public BuildingData(int id, string buildingName, string buildingDescription, int buildingHitPoint, int buidingArmorPercent, float buildingGridX, float buildingGridY, int tagWeapon)
+    public GameObject ModelGameObject;
+    
+    public BuildingData(int id, string buildingName, string buildingDescription, int buildingHitPoint, int buidingArmorPercent, float buildingGridX, float buildingGridY, int tagWeapon, GameObject modelGameObject)
     {
         ID = id;
         BuildingName = buildingName;
@@ -22,5 +24,6 @@ public class BuildingData
         BuildingGridX = buildingGridX;
         BuildingGridY = buildingGridY;
         TagWeapon = tagWeapon;
+        ModelGameObject = modelGameObject;
     }
 }
