@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class BuildingFormation : MonoBehaviour
+public class BuildingController : MonoBehaviour
 {
+    // TODO: get from Resource Loader
     public GameObject building;
     public GameObject home;
 
@@ -13,8 +15,13 @@ public class BuildingFormation : MonoBehaviour
 
     public LayerMask groundask;
 
-    void Start()
+    public bool buildingInProgress = false;
+
+    private int currentlyBuildingShopBuildingID;
+    public void Init()
     {
+        // TODO: Load buidling master data
+        //throw new System.NotImplementedException();
     }
 
     void Update()
@@ -37,6 +44,8 @@ public class BuildingFormation : MonoBehaviour
 
         if (PlantedBuilding != null)
         {
+            if (EventSystem.current.IsPointerOverGameObject()) return;
+            
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit, 1000f, LayerMask.GetMask("Ground")))
@@ -87,12 +96,26 @@ public class BuildingFormation : MonoBehaviour
                 {
                     PlantedBuilding.GetComponent<CheckNearByBuilding>().BuildAction();
                     PlantedBuilding = null;
+                    CanvasManager.Instance.BuildingTrainingList().ResetBuildComplete(currentlyBuildingShopBuildingID);
                 }
             }
         }
     }
+
+    public void BuildBuilding(int shopBuildingID)
+    {
+        currentlyBuildingShopBuildingID = shopBuildingID;
+        if (PlantedBuilding == null)
+        {
+            PlantedBuilding = Instantiate(building);
+        }
+        // TODO: Search by id to get building ID
+    }
+
+
     // public bool isOkay(Vector3 point) {
     //     Collider[] m_HitDetect = Physics.OverlapBox(point, new Vector3(7.9f, 3f, 7.9f) / 2, Quaternion.identity, LayerMask.GetMask("Default"));
     //     return m_HitDetect.Length == 0;
     // }
+    
 }

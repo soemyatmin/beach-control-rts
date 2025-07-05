@@ -9,7 +9,6 @@ public class ShopController : MonoBehaviour
     // button tab change
 
     [SerializeField] private GameObject PrefabGameObjectShopPrefab;
-    [SerializeField] private GameObject listContent;
 
     [SerializeField] private Button btnBuildingTab;
     [SerializeField] private Button btnDeferenceTab;
@@ -27,15 +26,14 @@ public class ShopController : MonoBehaviour
     public void LoadMasterData()
     {
         MasterShopBuildingButtonData = MasterData.Instance.GetMasterShopBuildingButtonData();
-        Debug.Log("complete Loading Master Data");
+        // Debug.Log("complete Loading Master Data");
     }
 
     public void LoadShop()
     {
         foreach (var ele in MasterShopBuildingButtonData)
         {
-            BtnShopBuilding ShopButton = Instantiate(PrefabGameObjectShopPrefab,listContent.transform).GetComponent<BtnShopBuilding>();
-            ShopButton.Init(ele);
+            CanvasManager.Instance.BuildingTrainingList().AddToBuildingListContent(ele, PrefabGameObjectShopPrefab);
         }
     }
 
