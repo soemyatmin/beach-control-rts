@@ -779,10 +779,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PrefabGameObjectShopPrefab: {fileID: 9040720575654022571, guid: d1c00d600ce821646a2c4c49d8fb97c4,
     type: 3}
-  btnBuildingTab: {fileID: 985690389}
-  btnDeferenceTab: {fileID: 98553372}
-  btnSoldierTab: {fileID: 1016143506}
-  btnTankTab: {fileID: 1100918311}
 --- !u!1 &395682932
 GameObject:
   m_ObjectHideFlags: 0
@@ -3986,7 +3982,7 @@ Transform:
   m_GameObject: {fileID: 1832656914}
   serializedVersion: 2
   m_LocalRotation: {x: 0.008062287, y: 0.38266882, z: -0.0033395085, w: 0.92384434}
-  m_LocalPosition: {x: 137, y: 29.5, z: 125}
+  m_LocalPosition: {x: 137, y: 63, z: 125}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

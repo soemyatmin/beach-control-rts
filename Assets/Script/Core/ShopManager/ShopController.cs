@@ -10,10 +10,10 @@ public class ShopController : MonoBehaviour
 
     [SerializeField] private GameObject PrefabGameObjectShopPrefab;
 
-    [SerializeField] private Button btnBuildingTab;
-    [SerializeField] private Button btnDeferenceTab;
-    [SerializeField] private Button btnSoldierTab;
-    [SerializeField] private Button btnTankTab;
+    // [SerializeField] private Button btnBuildingTab;
+    // [SerializeField] private Button btnDeferenceTab;
+    // [SerializeField] private Button btnSoldierTab;
+    // [SerializeField] private Button btnTankTab;
 
     public List<ShopBuildingButtonData> MasterShopBuildingButtonData;
 
