@@ -8,48 +8,54 @@ public class MasterData : SingletonMonoBehaviour<MasterData>
 
     string BuildingPrefabDataPrefix = "UI/Prefabs/Buildings/";
 
-    private List<ShopBuildingButtonData> shopBuildingButtonDataList = new List<ShopBuildingButtonData>();
+    private List<ShopButtonData> shopButtonDataList = new List<ShopButtonData>();
     private List<BuildingData> buildingButtonDataList = new List<BuildingData>();
 
     public void Init()
     {
         //Shop Building Data
-        shopBuildingButtonDataList.Add(new ShopBuildingButtonData(1, "Town Center", "", 0, 3000, 2, 5,
+        shopButtonDataList.Add(new ShopButtonData(1, "Town Center", ShopButtonData.ShopCategory.Building,"", 0, 3000, 2, 5,
             UniversalLoader.Instance.LoadResourceByName<Sprite>(ShopBuildingButtonDataPrefix + "button-shop-building-towncenter")));
-        shopBuildingButtonDataList.Add(new ShopBuildingButtonData(2, "House", "", 0, 500, 10, 20,
+        shopButtonDataList.Add(new ShopButtonData(2, "House", ShopButtonData.ShopCategory.Building, "", 0, 500, 10, 20,
             UniversalLoader.Instance.LoadResourceByName<Sprite>(ShopBuildingButtonDataPrefix + "button-shop-building-house")));
-        shopBuildingButtonDataList.Add(new ShopBuildingButtonData(3, "Community Center", "", 0, 1000, 10, 20,
-            UniversalLoader.Instance.LoadResourceByName<Sprite>(ShopBuildingButtonDataPrefix +
-                                                                "button-shop-building-community-center")));
-        shopBuildingButtonDataList.Add(new ShopBuildingButtonData(4, "Energy Station", "", 0, 700, 10, 20,
-            UniversalLoader.Instance.LoadResourceByName<Sprite>(ShopBuildingButtonDataPrefix +
-                                                                "button-shop-building-energy-station")));
-        shopBuildingButtonDataList.Add(new ShopBuildingButtonData(5, "Gold Miner", "", 0, 2000, 10, 5,
+        shopButtonDataList.Add(new ShopButtonData(3, "Community Center", ShopButtonData.ShopCategory.Building, "", 0, 1000, 10, 20,
+            UniversalLoader.Instance.LoadResourceByName<Sprite>(ShopBuildingButtonDataPrefix +"button-shop-building-community-center")));
+        shopButtonDataList.Add(new ShopButtonData(4, "Energy Station", ShopButtonData.ShopCategory.Building, "", 0, 700, 10, 20,
+            UniversalLoader.Instance.LoadResourceByName<Sprite>(ShopBuildingButtonDataPrefix +"button-shop-building-energy-station")));
+        shopButtonDataList.Add(new ShopButtonData(5, "Gold Miner", ShopButtonData.ShopCategory.Building, "", 0, 2000, 10, 5,
             UniversalLoader.Instance.LoadResourceByName<Sprite>(ShopBuildingButtonDataPrefix + "button-shop-building-gold-miner")));
 
-        shopBuildingButtonDataList.Add(new ShopBuildingButtonData(6, "Oil Rig", "", 0, 500, 10, 4,
+        shopButtonDataList.Add(new ShopButtonData(6, "Oil Rig", ShopButtonData.ShopCategory.Building, "", 0, 500, 10, 4,
             UniversalLoader.Instance.LoadResourceByName<Sprite>(ShopBuildingButtonDataPrefix + "button-shop-building-oil-rig")));
-        shopBuildingButtonDataList.Add(new ShopBuildingButtonData(7, "University", "", 0, 2000, 10, 20,
+        shopButtonDataList.Add(new ShopButtonData(7, "University", ShopButtonData.ShopCategory.Building, "", 0, 2000, 10, 20,
             UniversalLoader.Instance.LoadResourceByName<Sprite>(ShopBuildingButtonDataPrefix + "button-shop-building-university")));
-        shopBuildingButtonDataList.Add(new ShopBuildingButtonData(8, "Tank Factory", "", 0, 2000, 10, 20,
+        shopButtonDataList.Add(new ShopButtonData(8, "Tank Factory", ShopButtonData.ShopCategory.Building, "", 0, 2000, 10, 20,
             UniversalLoader.Instance.LoadResourceByName<Sprite>(ShopBuildingButtonDataPrefix + "button-shop-building-tank-factory")));
-        shopBuildingButtonDataList.Add(new ShopBuildingButtonData(9, "Barrack", "", 0, 1000, 10, 20,
+        shopButtonDataList.Add(new ShopButtonData(9, "Barrack", ShopButtonData.ShopCategory.Building, "", 0, 1000, 10, 20,
             UniversalLoader.Instance.LoadResourceByName<Sprite>(ShopBuildingButtonDataPrefix + "button-shop-building-barrack")));
-        shopBuildingButtonDataList.Add(new ShopBuildingButtonData(10, "Radio Tower", "", 0, 1500, 10, 20,
+        shopButtonDataList.Add(new ShopButtonData(10, "Radio Tower", ShopButtonData.ShopCategory.Building, "", 0, 1500, 10, 20,
             UniversalLoader.Instance.LoadResourceByName<Sprite>(ShopBuildingButtonDataPrefix + "button-shop-building-radio-tower")));
 
-        shopBuildingButtonDataList.Add(new ShopBuildingButtonData(11, "Tech Lab", "", 0, 6000, 10, 20,
+        shopButtonDataList.Add(new ShopButtonData(11, "Tech Lab", ShopButtonData.ShopCategory.Building, "", 0, 6000, 10, 20,
             UniversalLoader.Instance.LoadResourceByName<Sprite>(ShopBuildingButtonDataPrefix + "button-shop-building-tech-lab")));
-        shopBuildingButtonDataList.Add(new ShopBuildingButtonData(12, "Laser Gun Factory", "", 0, 4000, 10, 20,
+        shopButtonDataList.Add(new ShopButtonData(12, "Laser Gun Factory", ShopButtonData.ShopCategory.Building, "", 0, 4000, 10, 20,
             UniversalLoader.Instance.LoadResourceByName<Sprite>(ShopBuildingButtonDataPrefix + "button-shop-building-laser-gun-factory")));
-
+        
+        //Shop Defense Data
+        shopButtonDataList.Add(new ShopButtonData(1, "Town Center", ShopButtonData.ShopCategory.Defense,"", 0, 3000, 2, 5,
+            UniversalLoader.Instance.LoadResourceByName<Sprite>(ShopBuildingButtonDataPrefix + "button-shop-building-towncenter")));
+        shopButtonDataList.Add(new ShopButtonData(2, "House", ShopButtonData.ShopCategory.Defense, "", 0, 500, 10, 20,
+            UniversalLoader.Instance.LoadResourceByName<Sprite>(ShopBuildingButtonDataPrefix + "button-shop-building-house")));
+        shopButtonDataList.Add(new ShopButtonData(3, "Community Center", ShopButtonData.ShopCategory.Defense, "", 0, 1000, 10, 20,
+            UniversalLoader.Instance.LoadResourceByName<Sprite>(ShopBuildingButtonDataPrefix +"button-shop-building-community-center")));
+        
         //Building Data
         buildingButtonDataList.Add(new BuildingData(1, "Town Center", "", 4000, 10, 4, 4, 0, 
             UniversalLoader.Instance.LoadResourceByName<GameObject>(BuildingPrefabDataPrefix + "TempBuilding")));
     }
 
-    public List<ShopBuildingButtonData> GetMasterShopBuildingButtonData()
+    public List<ShopButtonData> GetMasterShopBuildingButtonData()
     {
-        return shopBuildingButtonDataList;
+        return shopButtonDataList;
     }
 }
