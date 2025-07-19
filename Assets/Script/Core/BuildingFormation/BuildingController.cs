@@ -17,7 +17,7 @@ public class BuildingController : MonoBehaviour
 
     public bool buildingInProgress = false;
 
-    private int currentlyBuildingShopBuildingID;
+    private ShopButtonData currentlyBuildingShopButton;
     public void Init()
     {
         // TODO: Load buidling master data
@@ -96,15 +96,15 @@ public class BuildingController : MonoBehaviour
                 {
                     PlantedBuilding.GetComponent<CheckNearByBuilding>().BuildAction();
                     PlantedBuilding = null;
-                    CanvasManager.Instance.BuildingTrainingList().ResetBuildComplete(currentlyBuildingShopBuildingID);
+                    CanvasManager.Instance.BuildingTrainingList().ResetBuildComplete(currentlyBuildingShopButton);
                 }
             }
         }
     }
 
-    public void BuildBuilding(int shopBuildingID)
+    public void BuildBuilding(ShopButtonData shopButtonData)
     {
-        currentlyBuildingShopBuildingID = shopBuildingID;
+        currentlyBuildingShopButton = shopButtonData;
         if (PlantedBuilding == null)
         {
             PlantedBuilding = Instantiate(building);

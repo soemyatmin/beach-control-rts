@@ -15,7 +15,7 @@ public class ShopController : MonoBehaviour
     // [SerializeField] private Button btnSoldierTab;
     // [SerializeField] private Button btnTankTab;
 
-    public List<ShopBuildingButtonData> MasterShopBuildingButtonData;
+    public List<ShopButtonData> MasterShopBuildingButtonData;
 
     public void Init()
     {
