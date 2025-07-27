@@ -20,15 +20,8 @@ public class ShopButtonData {
 
   public Sprite Image;
 
-  public ShopButtonData(int id,
-    string shopBuildingName,
-    ShopCategory category,
-    string shopBuildingDescription,
-    int shopBuildingDependentID,
-    float shopBuildingPrice,
-    float shopBuildingBuildDuration,
-    int shopBuildingLimit,
-    Sprite image) {
+  public ShopButtonData(int id, string shopBuildingName, ShopCategory category, string shopBuildingDescription, int shopBuildingDependentID,
+    float shopBuildingPrice, float shopBuildingBuildDuration, int shopBuildingLimit, Sprite image) {
     ID = id;
     ShopBuildingName = shopBuildingName;
     Category = category;

@@ -13,15 +13,8 @@ public class BuildingData {
 
   public GameObject ModelGameObject;
 
-  public BuildingData(int id,
-    string buildingName,
-    string buildingDescription,
-    int buildingHitPoint,
-    int buidingArmorPercent,
-    float buildingGridX,
-    float buildingGridY,
-    int tagWeapon,
-    GameObject modelGameObject) {
+  public BuildingData(int id, string buildingName, string buildingDescription, int buildingHitPoint, int buidingArmorPercent, float buildingGridX,
+    float buildingGridY, int tagWeapon, GameObject modelGameObject) {
     ID = id;
     BuildingName = buildingName;
     BuildingDescription = buildingDescription;

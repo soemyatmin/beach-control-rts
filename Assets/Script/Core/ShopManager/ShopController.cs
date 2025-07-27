@@ -3,16 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// load the shop, button tab change
+/// </summary>
 public class ShopController : MonoBehaviour {
-  // load the shop 
-  // button tab change
-
   [SerializeField] private GameObject PrefabGameObjectShopPrefab;
-
-  // [SerializeField] private Button btnBuildingTab;
-  // [SerializeField] private Button btnDeferenceTab;
-  // [SerializeField] private Button btnSoldierTab;
-  // [SerializeField] private Button btnTankTab;
 
   public List<ShopButtonData> MasterShopBuildingButtonData;
 
@@ -23,16 +18,17 @@ public class ShopController : MonoBehaviour {
 
   public void LoadMasterData() {
     MasterShopBuildingButtonData = MasterData.Instance.GetMasterShopBuildingButtonData();
-    // Debug.Log("complete Loading Master Data");
   }
 
   public void LoadShop() {
     foreach (var ele in MasterShopBuildingButtonData) {
-      CanvasManager.Instance.BuildingTrainingList().AddToBuildingListContent(ele,PrefabGameObjectShopPrefab);
+      CanvasManager.Instance.BuildingTrainingList().AddToBuildingListContent(ele, PrefabGameObjectShopPrefab);
     }
   }
 
-  // Refreash Loading
+  /// <summary>
+  /// Refreash Loading
+  /// </summary>
   public void ReloadShop() {
   }
 }

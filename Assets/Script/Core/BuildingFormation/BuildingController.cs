@@ -40,11 +40,11 @@ public class BuildingController : MonoBehaviour {
 
       RaycastHit hit;
       Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-      if (Physics.Raycast(ray,out hit,1000f,LayerMask.GetMask("Ground"))) {
+      if (Physics.Raycast(ray, out hit, 1000f, LayerMask.GetMask("Ground"))) {
         if (hit.transform.tag == "ground") {
           //PlantedBuilding.transform.position = hit.point;
           //Collider[] m_HitDetect = Physics.OverlapBox(hit.point + new Vector3(0, 1.5f, 0), new Vector3(8, 3, 8) / 2, Quaternion.identity, LayerMask.GetMask("Default"));
-          Vector3 point = new Vector3(Mathf.Round(hit.point.x),0,Mathf.Round(hit.point.z));
+          Vector3 point = new Vector3(Mathf.Round(hit.point.x), 0, Mathf.Round(hit.point.z));
           PlantedBuilding.transform.position = point;
           // if (m_HitDetect.Length == 0) {  
           // } else if (m_HitDetect.Length > 0) {
