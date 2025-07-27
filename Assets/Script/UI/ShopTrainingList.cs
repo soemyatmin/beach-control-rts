@@ -8,8 +8,7 @@ public class ShopTrainingList : MonoBehaviour {
 
   [SerializeField] private Transform unviewList;
 
-  public void AddToBuildingListContent(ShopButtonData shopButtonData,
-    GameObject PrefabGameObjectShopPrefab) {
+  public void AddToBuildingListContent(ShopButtonData shopButtonData, GameObject PrefabGameObjectShopPrefab) {
     BtnShop ShopButton = Instantiate(PrefabGameObjectShopPrefab, listContent).GetComponent<BtnShop>();
     btnShopList.Add(ShopButton);
 

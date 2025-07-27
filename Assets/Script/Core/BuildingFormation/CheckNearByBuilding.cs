@@ -6,12 +6,8 @@ using UnityEngine;
 public class CheckNearByBuilding : MonoBehaviour {
 
   public bool CheckingBuildingAllowedBuild() {
-    Collider[] m_HitDetect = Physics.OverlapBox(transform.position + new Vector3(0,
-        GetComponent<BoxCollider>().center.y,
-        0),
-      new Vector3(GetComponent<BoxCollider>().size.x,
-        GetComponent<BoxCollider>().size.y,
-        GetComponent<BoxCollider>().size.z) / 2,
+    Collider[] m_HitDetect = Physics.OverlapBox(transform.position + new Vector3(0, GetComponent<BoxCollider>().center.y, 0),
+      new Vector3(GetComponent<BoxCollider>().size.x, GetComponent<BoxCollider>().size.y, GetComponent<BoxCollider>().size.z) / 2,
       Quaternion.identity);
     if (m_HitDetect.Length > 0) {
       for (int i = 0; i < m_HitDetect.Length; i++) {
@@ -30,12 +26,7 @@ public class CheckNearByBuilding : MonoBehaviour {
   private void OnDrawGizmos() {
     Gizmos.color = Color.yellow;
 
-    Gizmos.DrawWireCube(transform.position + new Vector3(0,
-        GetComponent<BoxCollider>().center.y,
-        0),
-      new Vector3(
-        GetComponent<BoxCollider>().size.x,
-        GetComponent<BoxCollider>().size.y,
-        GetComponent<BoxCollider>().size.z));
+    Gizmos.DrawWireCube(transform.position + new Vector3(0, GetComponent<BoxCollider>().center.y, 0),
+      new Vector3(GetComponent<BoxCollider>().size.x, GetComponent<BoxCollider>().size.y, GetComponent<BoxCollider>().size.z));
   }
 }
