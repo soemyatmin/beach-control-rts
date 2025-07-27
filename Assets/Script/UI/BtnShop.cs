@@ -4,137 +4,119 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BtnShop : MonoBehaviour
-{
-    [SerializeField] private Image background;
-    [SerializeField] private TextMeshProUGUI shopItemName;
-    [SerializeField] private TextMeshProUGUI Count;
-    [SerializeField] private Button btnToBuild;
-    [SerializeField] private Button btnReadyBuild;
-    [SerializeField] private Button btnCancelBuild;
-    [SerializeField] private GameObject readyStatusGameObject;
-    [SerializeField] private Slider sliderProgressShow;
+public class BtnShop : MonoBehaviour {
+  [SerializeField] private Image background;
+  [SerializeField] private TextMeshProUGUI shopItemName;
+  [SerializeField] private TextMeshProUGUI Count;
+  [SerializeField] private Button btnToBuild;
+  [SerializeField] private Button btnReadyBuild;
+  [SerializeField] private Button btnCancelBuild;
+  [SerializeField] private GameObject readyStatusGameObject;
+  [SerializeField] private Slider sliderProgressShow;
 
-    [SerializeField] private GameObject statusObjectToBuild;
-    [SerializeField] private GameObject statusObjectReadyBuild;
-    [SerializeField] private GameObject statusObjectCancelBuild;
-    [SerializeField] private GameObject statusObjectProhibitedBuild;
+  [SerializeField] private GameObject statusObjectToBuild;
+  [SerializeField] private GameObject statusObjectReadyBuild;
+  [SerializeField] private GameObject statusObjectCancelBuild;
+  [SerializeField] private GameObject statusObjectProhibitedBuild;
 
-    private ShopButtonData _shopButtonData;
+  private ShopButtonData _shopButtonData;
 
-    private Coroutine cooldownCoroutine;
+  private Coroutine cooldownCoroutine;
 
-    public void Init(ShopButtonData shopButtonData)
-    {
-        this._shopButtonData = shopButtonData;
-        if (shopButtonData.Category == ShopButtonData.ShopCategory.Building ||
-            shopButtonData.Category == ShopButtonData.ShopCategory.Defense)
-        {
-            Count.gameObject.SetActive(false);
-        }
-        
-        btnToBuild.onClick.AddListener(OnClickToBuild);
-        btnReadyBuild.onClick.AddListener(OnClickReadyBuild);
-        btnCancelBuild.onClick.AddListener(OnClickCancelBuild);
-
-        // TODO: While changing panel, status will come from data
-        statusObjectToBuild.SetActive(true);
-        statusObjectReadyBuild.SetActive(false);
-        statusObjectCancelBuild.SetActive(false);
-        statusObjectProhibitedBuild.SetActive(false);
-
-        BindView();
+  public void Init(ShopButtonData shopButtonData) {
+    this._shopButtonData = shopButtonData;
+    if (shopButtonData.Category == ShopButtonData.ShopCategory.Building || shopButtonData.Category == ShopButtonData.ShopCategory.Defense) {
+      Count.gameObject.SetActive(false);
     }
 
-    void BindView()
-    {
-        background.sprite = _shopButtonData.Image;
-        shopItemName.text = _shopButtonData.ShopBuildingName;
+    btnToBuild.onClick.AddListener(OnClickToBuild);
+    btnReadyBuild.onClick.AddListener(OnClickReadyBuild);
+    btnCancelBuild.onClick.AddListener(OnClickCancelBuild);
+
+    // TODO: While changing panel, status will come from data
+    statusObjectToBuild.SetActive(true);
+    statusObjectReadyBuild.SetActive(false);
+    statusObjectCancelBuild.SetActive(false);
+    statusObjectProhibitedBuild.SetActive(false);
+
+    BindView();
+  }
+
+  void BindView() {
+    background.sprite = _shopButtonData.Image;
+    shopItemName.text = _shopButtonData.ShopBuildingName;
+  }
+
+  public ShopButtonData GetShopBuilding() {
+    return _shopButtonData;
+  }
+
+  private void OnClickToBuild() {
+    StartCooldown(_shopButtonData.ShopBuildingBuildDuration);
+    statusObjectToBuild.SetActive(false);
+    statusObjectReadyBuild.SetActive(false);
+    statusObjectCancelBuild.SetActive(true);
+    // TODO: not allow to build related build
+    CanvasManager.Instance.BuildingTrainingList().ProhibitedBuild(_shopButtonData);
+  }
+
+  private void OnClickReadyBuild() {
+    statusObjectToBuild.SetActive(false);
+    statusObjectReadyBuild.SetActive(true);
+    statusObjectCancelBuild.SetActive(false);
+    GameManager.Instance.BuildingController().BuildBuilding(_shopButtonData);
+  }
+
+  private void OnClickCancelBuild() {
+    // TODO: Web version, right click to cancel
+    StopCooldown();
+    sliderProgressShow.value = 0;
+
+    statusObjectToBuild.SetActive(true);
+    statusObjectReadyBuild.SetActive(false);
+    statusObjectCancelBuild.SetActive(false);
+
+    CanvasManager.Instance.BuildingTrainingList().ResetBuildComplete(_shopButtonData);
+  }
+
+  public void Reset() {
+    statusObjectToBuild.SetActive(true);
+    statusObjectReadyBuild.SetActive(false);
+    statusObjectCancelBuild.SetActive(false);
+    statusObjectProhibitedBuild.SetActive(false);
+  }
+
+  public void ProhibitedBuild() {
+    statusObjectProhibitedBuild.SetActive(true);
+  }
+
+  private void StartCooldown(float seconds) {
+    StopAllCoroutines();
+    cooldownCoroutine = StartCoroutine(CooldownRoutine(seconds));
+  }
+
+  private void StopCooldown() {
+    if (cooldownCoroutine != null) {
+      StopCoroutine(cooldownCoroutine);
+      cooldownCoroutine = null;
     }
-    
-    public ShopButtonData GetShopBuilding()
-    {
-        return _shopButtonData;
-    }
-    
-    private void OnClickToBuild()
-    {
-        StartCooldown(_shopButtonData.ShopBuildingBuildDuration);
-        statusObjectToBuild.SetActive(false);
-        statusObjectReadyBuild.SetActive(false);
-        statusObjectCancelBuild.SetActive(true);
-        // TODO: not allow to build related build
-        CanvasManager.Instance.BuildingTrainingList().ProhibitedBuild(_shopButtonData);
+  }
+
+  private IEnumerator CooldownRoutine(float seconds) {
+    float elapsed = 0f;
+    while (elapsed < seconds) {
+      elapsed += Time.deltaTime;
+      sliderProgressShow.value = Mathf.Lerp(100f, 0f, elapsed / seconds);
+      yield return null;
     }
 
-    private void OnClickReadyBuild()
-    {
-        statusObjectToBuild.SetActive(false);
-        statusObjectReadyBuild.SetActive(true);
-        statusObjectCancelBuild.SetActive(false);
-        GameManager.Instance.BuildingController().BuildBuilding(_shopButtonData);
-    }
+    sliderProgressShow.value = 0f;
+    OnCooldownFinished();
+  }
 
-    private void OnClickCancelBuild()
-    {
-        // TODO: Web version, right click to cancel
-        StopCooldown();
-        sliderProgressShow.value = 0;
-
-        statusObjectToBuild.SetActive(true);
-        statusObjectReadyBuild.SetActive(false);
-        statusObjectCancelBuild.SetActive(false);
-
-        CanvasManager.Instance.BuildingTrainingList().ResetBuildComplete(_shopButtonData);
-    }
-    
-    public void Reset()
-    {
-        statusObjectToBuild.SetActive(true);
-        statusObjectReadyBuild.SetActive(false);
-        statusObjectCancelBuild.SetActive(false);
-        statusObjectProhibitedBuild.SetActive(false);
-    }
-
-    public void ProhibitedBuild()
-    {
-        statusObjectProhibitedBuild.SetActive(true);
-    }
-    
-    private void StartCooldown(float seconds)
-    {
-        Debug.Log("StartCooldown" + seconds);
-        StopAllCoroutines();
-        cooldownCoroutine = StartCoroutine(CooldownRoutine(seconds));
-    }
-
-    private void StopCooldown()
-    {
-        if (cooldownCoroutine != null)
-        {
-            StopCoroutine(cooldownCoroutine);
-            cooldownCoroutine = null;
-        }
-    }
-
-    private IEnumerator CooldownRoutine(float seconds)
-    {
-        float elapsed = 0f;
-        while (elapsed < seconds)
-        {
-            elapsed += Time.deltaTime;
-            sliderProgressShow.value = Mathf.Lerp(100f, 0f, elapsed / seconds);
-            yield return null;
-        }
-
-        sliderProgressShow.value = 0f;
-        OnCooldownFinished();
-    }
-
-    private void OnCooldownFinished()
-    {
-        statusObjectToBuild.SetActive(false);
-        statusObjectReadyBuild.SetActive(true);
-        statusObjectCancelBuild.SetActive(false);
-    }
+  private void OnCooldownFinished() {
+    statusObjectToBuild.SetActive(false);
+    statusObjectReadyBuild.SetActive(true);
+    statusObjectCancelBuild.SetActive(false);
+  }
 }

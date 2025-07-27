@@ -3,5 +3,5 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraMovingBtn : MonoBehaviour {
-    public CameraMove.ScreenPosition ButtonPosition;
+  public CameraMove.ScreenPosition ButtonPosition;
 }
