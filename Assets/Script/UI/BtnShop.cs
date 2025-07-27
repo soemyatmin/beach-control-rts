@@ -23,11 +23,11 @@ public class BtnShop : MonoBehaviour {
 
   private Coroutine cooldownCoroutine;
 
+  private int counter = 0;
   public void Init(ShopButtonData shopButtonData) {
     this._shopButtonData = shopButtonData;
-    if (shopButtonData.Category == ShopButtonData.ShopCategory.Building || shopButtonData.Category == ShopButtonData.ShopCategory.Defense) {
-      Count.gameObject.SetActive(false);
-    }
+
+    Count.gameObject.SetActive(!(shopButtonData.Category is ShopButtonData.ShopCategory.Building or ShopButtonData.ShopCategory.Defense));
 
     btnToBuild.onClick.AddListener(OnClickToBuild);
     btnReadyBuild.onClick.AddListener(OnClickReadyBuild);
@@ -52,31 +52,45 @@ public class BtnShop : MonoBehaviour {
   }
 
   private void OnClickToBuild() {
-    StartCooldown(_shopButtonData.ShopBuildingBuildDuration);
-    statusObjectToBuild.SetActive(false);
-    statusObjectReadyBuild.SetActive(false);
-    statusObjectCancelBuild.SetActive(true);
-    // TODO: not allow to build related build
-    CanvasManager.Instance.BuildingTrainingList().ProhibitedBuild(_shopButtonData);
+    if ((_shopButtonData.Category is ShopButtonData.ShopCategory.Building or ShopButtonData.ShopCategory.Defense)) {
+      StartCooldown(_shopButtonData.ShopBuildingBuildDuration);
+      statusObjectToBuild.SetActive(false);
+      statusObjectReadyBuild.SetActive(false);
+      statusObjectCancelBuild.SetActive(true);
+      // TODO: not allow to build related build
+      CanvasManager.Instance.BuildingTrainingList().ProhibitedBuild(_shopButtonData);
+    } else {
+      if (counter == 0) {
+        StartCooldown(_shopButtonData.ShopBuildingBuildDuration);
+      }
+      AddCounter();
+    }
   }
 
   private void OnClickReadyBuild() {
-    statusObjectToBuild.SetActive(false);
-    statusObjectReadyBuild.SetActive(true);
-    statusObjectCancelBuild.SetActive(false);
-    GameManager.Instance.BuildingController().BuildBuilding(_shopButtonData);
+    if ((_shopButtonData.Category is ShopButtonData.ShopCategory.Building or ShopButtonData.ShopCategory.Defense)) {
+      statusObjectToBuild.SetActive(false);
+      statusObjectReadyBuild.SetActive(true);
+      statusObjectCancelBuild.SetActive(false);
+      GameManager.Instance.BuildingController().BuildBuilding(_shopButtonData);
+    } 
   }
 
   private void OnClickCancelBuild() {
-    // TODO: Web version, right click to cancel
-    StopCooldown();
-    sliderProgressShow.value = 0;
+    if ((_shopButtonData.Category is ShopButtonData.ShopCategory.Building or ShopButtonData.ShopCategory.Defense)) {
+      // TODO: Web version, right click to cancel
+      StopCooldown();
+      sliderProgressShow.value = 0;
 
-    statusObjectToBuild.SetActive(true);
-    statusObjectReadyBuild.SetActive(false);
-    statusObjectCancelBuild.SetActive(false);
+      statusObjectToBuild.SetActive(true);
+      statusObjectReadyBuild.SetActive(false);
+      statusObjectCancelBuild.SetActive(false);
 
-    CanvasManager.Instance.BuildingTrainingList().ResetBuildComplete(_shopButtonData);
+      CanvasManager.Instance.BuildingTrainingList().ResetBuildComplete(_shopButtonData);
+    } else {
+      Debug.Log("Unit Cancel");
+      RemoveCounter();
+    }
   }
 
   public void Reset() {
@@ -115,8 +129,31 @@ public class BtnShop : MonoBehaviour {
   }
 
   private void OnCooldownFinished() {
-    statusObjectToBuild.SetActive(false);
-    statusObjectReadyBuild.SetActive(true);
-    statusObjectCancelBuild.SetActive(false);
+    if ((_shopButtonData.Category is ShopButtonData.ShopCategory.Building or ShopButtonData.ShopCategory.Defense)) {
+      statusObjectToBuild.SetActive(false);
+      statusObjectReadyBuild.SetActive(true);
+      statusObjectCancelBuild.SetActive(false);
+    } else {
+      Debug.Log("Unit Ready");
+      RemoveCounter();
+      if (counter != 0) {
+        StartCooldown(_shopButtonData.ShopBuildingBuildDuration);
+      }
+    }
   }
+
+  private void AddCounter() {
+    if (counter < 30) { // TODO: move the number to master data
+      counter++;
+      Count.text = counter.ToString();
+    }
+  }
+
+  private void RemoveCounter() {
+    if (counter > 0) {
+      counter--;
+      Count.text = counter.ToString();
+    }
+  }
+
 }

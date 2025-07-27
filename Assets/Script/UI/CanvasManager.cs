@@ -7,6 +7,7 @@ public class CanvasManager : SingletonMonoBehaviour<CanvasManager> {
   [SerializeField] private ShopTrainingList shopTrainingList;
 
   [SerializeField] private ShopTabs shopTabs;
+  [SerializeField] private TrainingQueue traningQueue;
 
   public ShopTrainingList BuildingTrainingList() {
     return shopTrainingList;
