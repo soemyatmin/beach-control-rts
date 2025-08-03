@@ -72,7 +72,7 @@ public class BtnShop : MonoBehaviour {
       statusObjectToBuild.SetActive(false);
       statusObjectReadyBuild.SetActive(true);
       statusObjectCancelBuild.SetActive(false);
-      GameManager.Instance.BuildingController().BuildBuilding(_shopButtonData);
+      GameManager.Instance.BuildingController().BuildBuildingFromUI(_shopButtonData);
     } 
   }
 
@@ -103,7 +103,7 @@ public class BtnShop : MonoBehaviour {
   public void ProhibitedBuild() {
     statusObjectProhibitedBuild.SetActive(true);
   }
-
+  
   private void StartCooldown(float seconds) {
     StopAllCoroutines();
     cooldownCoroutine = StartCoroutine(CooldownRoutine(seconds));
@@ -155,5 +155,4 @@ public class BtnShop : MonoBehaviour {
       Count.text = counter.ToString();
     }
   }
-
 }
