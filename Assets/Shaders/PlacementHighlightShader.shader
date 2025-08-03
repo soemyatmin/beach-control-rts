@@ -6,22 +6,26 @@ Shader "Custom/PlacementHighlightShader"
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
 
         // --- Highlight Properties ---
-        [HDR] _OverlayColor ("Overlay Color", Color) = (0,1,0,1)
-        _OverlayStrength ("Static Strength", Range(0,1)) = 0.0 // For turning off the effect
-
-        // --- NEW: Twinkle Properties ---
-        _UseTwinkle ("Use Twinkle", Range(0, 1)) = 0.0 // Acts as a boolean (0=off, 1=on)
+        [HDR] _OverlayColor ("Overlay Color (RGB) & Strength (A)", Color) = (0,1,0,0) 
+        
+        // --- Twinkle Properties ---
+        _UseTwinkle ("Use Twinkle", Range(0, 1)) = 0.0
         _TwinkleSpeed ("Twinkle Speed", Float) = 10.0
         _MinStrength ("Min Twinkle Strength", Range(0,1)) = 0.3
         _MaxStrength ("Max Twinkle Strength", Range(0,1)) = 0.7
+
+        // --- Opacity Property ---
+        _Opacity ("Opacity", Range(0, 1)) = 1.0
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" "Queue"="Geometry" }
+        Tags { "RenderType"="Transparent" "Queue"="Transparent" }
         LOD 200
 
+        Blend SrcAlpha OneMinusSrcAlpha
+
         CGPROGRAM
-        #pragma surface surf Standard fullforwardshadows
+        #pragma surface surf Standard fullforwardshadows alpha:fade
         #pragma target 3.0
 
         sampler2D _MainTex;
@@ -30,12 +34,12 @@ Shader "Custom/PlacementHighlightShader"
         fixed4 _Color;
         fixed4 _OverlayColor;
         half _OverlayStrength;
-        
-        // Accessing the new properties
         half _UseTwinkle;
         half _TwinkleSpeed;
         half _MinStrength;
         half _MaxStrength;
+        
+        half _Opacity;
 
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
@@ -49,13 +53,13 @@ Shader "Custom/PlacementHighlightShader"
                 currentStrength = lerp(_MinStrength, _MaxStrength, sineWave);
             }
 
-            // Linearly interpolate between the original color and our overlay color using the final strength.
             fixed3 finalColor = lerp(originalColor.rgb, _OverlayColor.rgb, currentStrength);
             
             o.Albedo = finalColor;
             o.Metallic = 0.0;
             o.Smoothness = 0.0;
-            o.Alpha = originalColor.a;
+            
+            o.Alpha = originalColor.a * _Opacity;
         }
         ENDCG
     }

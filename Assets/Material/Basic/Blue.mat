@@ -68,18 +68,23 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _MaxStrength: 0.7
     - _Metallic: 0
+    - _MinStrength: 0.3
     - _Mode: 0
     - _OcclusionStrength: 1
+    - _Opacity: 1
     - _OverlayStrength: 0
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _TwinkleSpeed: 10
     - _UVSec: 0
+    - _UseTwinkle: 0
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 0.376602, g: 0.63987625, b: 0.8773585, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _OverlayColor: {r: 0, g: 1, b: 0, a: 1}
+    - _OverlayColor: {r: 0, g: 1, b: 0, a: 0.43137255}
   m_BuildTextureStacks: []

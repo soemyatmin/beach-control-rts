@@ -3,118 +3,121 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class BuildingController : MonoBehaviour{
-    [Header("Placement Settings")]
-    [SerializeField] private LayerMask groundLayerMask;
+public class BuildingController : MonoBehaviour {
+  [Header("Placement Settings")]
+  [SerializeField] private LayerMask groundLayerMask;
 
-    [Header("Twinkle - Placeable (Green)")]
-    [SerializeField] private float placeableTwinkleSpeed = 10f;
-    [SerializeField][Range(0, 1)] private float placeableMinStrength = 0.3f;
-    [SerializeField][Range(0, 1)] private float placeableMaxStrength = 0.6f;
+  [Header("Twinkle - Placeable (Green)")]
+  [SerializeField] private float placeableTwinkleSpeed = 10f;
+  [SerializeField] [Range(0, 1)] private float placeableMinAlpha = 0.2f;
+  [SerializeField] [Range(0, 1)] private float placeableMaxAlpha = 0.5f;
 
-    [Header("Twinkle - Unplaceable (Red)")]
-    [SerializeField] private float unplaceableTwinkleSpeed = 25f;
-    [SerializeField][Range(0, 1)] private float unplaceableMinStrength = 0.4f;
-    [SerializeField][Range(0, 1)] private float unplaceableMaxStrength = 0.8f;
+  [Header("Twinkle - Unplaceable (Red)")]
+  [SerializeField] private float unplaceableTwinkleSpeed = 25f;
+  [SerializeField] [Range(0, 1)] private float unplaceableMinAlpha = 0.3f;
+  [SerializeField] [Range(0, 1)] private float unplaceableMaxAlpha = 0.7f;
 
-    private GameObject objectToPlace;
-    private CheckNearByBuilding objectChecker;
-    private Camera mainCamera;
-    private bool lastPlacementValidity = true;
+  private GameObject objectToPlace;
+  private CheckNearByBuilding objectChecker;
+  private Camera mainCamera;
+  private bool lastPlacementValidity = true;
+  private Dictionary<int, BuildingData> buildingDataDictionary;
 
-    public void Init()
-    {
-        
+  public void Init() {
+    // TODO: Load building master data
+
+    buildingDataDictionary = new Dictionary<int, BuildingData>();
+
+    List<BuildingData> masterList = MasterData.Instance.GetMasterBuildingData();
+
+    foreach (var data in masterList) {
+      if (!buildingDataDictionary.TryAdd(data.ID, data)) {
+        Debug.LogWarning($"Duplicate Building ID {data.ID} found in MasterData!");
+      }
     }
+  }
 
-    private void Start()
-    {
-        mainCamera = Camera.main;
-    }
+  private void Start() {
+    mainCamera = Camera.main;
+  }
 
-    void Update()
-    {
-        if (objectToPlace != null)
-        {
-            if (Input.GetMouseButtonDown(1)) { CancelPlacement(); return; }
-            FollowMouseAndApplyHighlight();
-            if (Input.GetMouseButtonUp(0) && !EventSystem.current.IsPointerOverGameObject())
-            {
-                if (objectChecker.IsPlacementValid()) {
-                    PlaceBuilding();
-                }
-            }
+  void Update() {
+    if (objectToPlace != null) {
+      if (Input.GetMouseButtonDown(1)) {
+        CancelPlacement();
+        return;
+      }
+      FollowMouseAndApplyHighlight();
+      if (Input.GetMouseButtonUp(0) && !EventSystem.current.IsPointerOverGameObject()) {
+        if (objectChecker.IsPlacementValid()) {
+          PlaceBuilding();
         }
+      }
+    }
+  }
+
+  public void BuildBuildingFromUI(ShopButtonData data) {
+    if (data == null) return;
+    if (objectToPlace != null) CancelPlacement();
+
+    BuildingData buildingData = GetBuildingData(data.ID);
+    if (buildingData?.ModelGameObject == null) return;
+
+    objectToPlace = Instantiate(buildingData.ModelGameObject);
+    objectChecker = objectToPlace.GetComponent<CheckNearByBuilding>();
+
+    objectChecker.placementPadding = buildingData.PlacementPadding;
+
+    BoxCollider bc = objectToPlace.GetComponent<BoxCollider>();
+    if (bc != null) {
+      bc.size = new Vector3(buildingData.BuildingGridX, bc.size.y, buildingData.BuildingGridY);
     }
 
-    public void BuildBuildingFromUI(ShopButtonData data)
-    {
-        if (data == null) return;
+    objectToPlace.GetComponent<Collider>().enabled = false;
+    objectToPlace.layer = 0;
 
-        BuildingData buildingData = GameManager.Instance.BuildingDataManager().GetBuildingData(data.ID);
-        if (buildingData == null || buildingData.ModelGameObject == null)
-        {
-            Debug.LogError($"Could not find valid BuildingData or ModelGameObject for ID {data.ID}");
-            return;
-        }
+    FollowMouseAndApplyHighlight();
+    lastPlacementValidity = !objectChecker.IsPlacementValid();
+    ApplyHighlightState(objectChecker.IsPlacementValid());
+  }
 
-        if (objectToPlace != null) { CancelPlacement(); }
-
-        objectToPlace = Instantiate(buildingData.ModelGameObject);
-        objectChecker = objectToPlace.GetComponent<CheckNearByBuilding>();
-
-        BoxCollider bc = objectToPlace.GetComponent<BoxCollider>();
-        if (bc != null)
-        {
-            bc.size = new Vector3(buildingData.BuildingGridX, bc.size.y, buildingData.BuildingGridY);
-        }
-
-        objectChecker.placementPadding = buildingData.PlacementPadding;
-        objectChecker.EnableHighlight(true);
-        lastPlacementValidity =true;
-        objectToPlace.GetComponent<Collider>().enabled = false;
-        objectToPlace.layer = 0;
+  private BuildingData GetBuildingData(int id) {
+    if (buildingDataDictionary.TryGetValue(id, out BuildingData data)) {
+      return data;
     }
+    Debug.LogError($"BuildingData with ID {id} not found!");
+    return null;
+  }
 
-    private void FollowMouseAndApplyHighlight()
-    {
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit, 1000f, groundLayerMask))
-        {
-            Vector3 position = new Vector3(Mathf.Round(hit.point.x), 0, Mathf.Round(hit.point.z));
-            objectToPlace.transform.position = position;
-
-            bool isCurrentlyValid = objectChecker.IsPlacementValid();
-
-            if (isCurrentlyValid != lastPlacementValidity)
-            {
-                if (isCurrentlyValid)
-                {
-                    objectChecker.SetHighlightColor(Color.green);
-                    objectChecker.SetTwinkle(placeableTwinkleSpeed, placeableMinStrength, placeableMaxStrength);
-                }
-                else
-                {
-                    objectChecker.SetHighlightColor(Color.red);
-                    objectChecker.SetTwinkle(unplaceableTwinkleSpeed, unplaceableMinStrength, unplaceableMaxStrength);
-                }
-                lastPlacementValidity = isCurrentlyValid;
-            }
-        }
+  private void FollowMouseAndApplyHighlight() {
+    Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+    if (Physics.Raycast(ray, out RaycastHit hit, 1000f, groundLayerMask)) {
+      objectToPlace.transform.position = new Vector3(Mathf.Round(hit.point.x), 0, Mathf.Round(hit.point.z));
+      bool isCurrentlyValid = objectChecker.IsPlacementValid();
+      if (isCurrentlyValid != lastPlacementValidity) {
+        ApplyHighlightState(isCurrentlyValid);
+        lastPlacementValidity = isCurrentlyValid;
+      }
     }
+  }
 
-    private void PlaceBuilding()
-    {
-        objectChecker.BuildAction();
-        objectToPlace = null;
-        objectChecker = null;
+  private void ApplyHighlightState(bool isValid) {
+    if (isValid) { objectChecker.SetHighlight(Color.green, placeableTwinkleSpeed, placeableMinAlpha, placeableMaxAlpha, true); } else {
+      objectChecker.SetHighlight(Color.red, unplaceableTwinkleSpeed, unplaceableMinAlpha, unplaceableMaxAlpha, true);
     }
+  }
 
-    private void CancelPlacement()
-    {
-        objectChecker.EnableHighlight(false);
-        Destroy(objectToPlace);
-        objectToPlace = null;
-        objectChecker = null;
-    }
+  private void PlaceBuilding() {
+    objectChecker.BuildAction();
+    objectToPlace = null;
+    objectChecker = null;
+  }
+
+  private void CancelPlacement() {
+    if (objectToPlace == null) return;
+    objectChecker.SetHighlight(Color.clear, 0, 0, 0, false);
+    Destroy(objectToPlace);
+    objectToPlace = null;
+    objectChecker = null;
+  }
 }

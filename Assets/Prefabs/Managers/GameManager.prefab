@@ -80,7 +80,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   groundLayerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
+  placementOpacity: 1
   placeableTwinkleSpeed: 10
   placeableMinStrength: 0.3
   placeableMaxStrength: 0.6
@@ -97,7 +98,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4006471242145561999}
   - component: {fileID: 8609190446550632740}
-  - component: {fileID: 3229465330447489778}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -136,18 +136,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _shopController: {fileID: 300241032134589698}
   _buildingController: {fileID: 7193568135505421837}
---- !u!114 &3229465330447489778
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8309780914982838434}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f344dc4cfe5c4644cbdde19637868207, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &8895799040165428220
 GameObject:
   m_ObjectHideFlags: 0
