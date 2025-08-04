@@ -1279,6 +1279,7 @@ GameObject:
   - component: {fileID: 852767265497523851}
   - component: {fileID: 4848475272425970007}
   - component: {fileID: 5610922896043592811}
+  - component: {fileID: 5219545910195985549}
   m_Layer: 5
   m_Name: BtnShop
   m_TagString: Untagged
@@ -1376,3 +1377,16 @@ MonoBehaviour:
   statusObjectReadyBuild: {fileID: 2416797875537917235}
   statusObjectCancelBuild: {fileID: 8619730208164927009}
   statusObjectProhibitedBuild: {fileID: 3242077054959416528}
+  _trainingQueue: {fileID: 5219545910195985549}
+--- !u!114 &5219545910195985549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9040720575654022571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec7b54785e9b684498336ef4068ef7f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

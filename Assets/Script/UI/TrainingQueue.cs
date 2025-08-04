@@ -1,35 +1,49 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI; 
+using UnityEngine.UI;
 
 // TODO: Work in Progress Code, to connect with BtnShop,cs and CanvasManager.cs
-public class TrainingQueue : MonoBehaviour
-{
-  public float trainingTimePerUnit = 3f;
-  private Queue<ShopButtonData> queue = new Queue<ShopButtonData>();
-  private bool isTraining = false;
+public class TrainingQueue : MonoBehaviour {
   
-  public void EnqueueSoldier(ShopButtonData soldier)
-  {
-    queue.Enqueue(soldier);
-    if (!isTraining)
-      StartCoroutine(TrainNextSoldier());
+  private Queue<BtnShop> queue = new Queue<BtnShop>();
+  private bool isTraining = false;
+
+  public void EnqueueUnit(BtnShop unitButton) {
+    queue.Enqueue(unitButton);
+    // unitButton.refreshCount();
+    if (!isTraining){
+      StartCoroutine(TrainNextSoldier(unitButton));
+    }
   }
-
-  private IEnumerator TrainNextSoldier()
-  {
-    while (queue.Count > 0)
-    {
+  
+  private IEnumerator TrainNextSoldier(BtnShop unitButton) {
+    while (queue.Count > 0) {
       isTraining = true;
-      ShopButtonData current = queue.Dequeue();
+      BtnShop current = queue.Dequeue();
+      // unitButton.refreshCount();
 
-      Debug.Log($"Training {current.ShopBuildingName}...");
-      // You can use current.Sprite or other data here as needed
-
-      yield return new WaitForSeconds(trainingTimePerUnit);
-      Debug.Log($"{current.ShopBuildingName} trained!");
+      yield return new WaitForSeconds(unitButton.GetShopBuilding().ShopBuildingBuildDuration);
+      unitButton.OnCooldownFinished();
     }
     isTraining = false;
+  }
+  
+  public void RemoveSoldier(BtnShop unitButton) {
+    Queue<BtnShop> newQueue = new Queue<BtnShop>();
+
+    foreach (var soldier in queue) {
+      if (soldier != unitButton) {
+        newQueue.Enqueue(soldier);
+      }
+    }
+
+    queue = newQueue;
+    // unitButton.refreshCount();
+  }
+  
+  public bool limitQueueCount() {
+    return true;
   }
 }

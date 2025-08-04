@@ -63,7 +63,6 @@ public class BtnShop : MonoBehaviour {
       if (counter == 0) {
         StartCooldown(_shopButtonData.ShopBuildingBuildDuration);
       }
-      AddCounter();
     }
   }
 
@@ -72,7 +71,7 @@ public class BtnShop : MonoBehaviour {
       statusObjectToBuild.SetActive(false);
       statusObjectReadyBuild.SetActive(true);
       statusObjectCancelBuild.SetActive(false);
-      GameManager.Instance.BuildingController().BuildBuilding(_shopButtonData);
+      GameManager.Instance.BuildingController().BuildBuildingFromUI(_shopButtonData);
     } 
   }
 
@@ -89,7 +88,6 @@ public class BtnShop : MonoBehaviour {
       CanvasManager.Instance.BuildingTrainingList().ResetBuildComplete(_shopButtonData);
     } else {
       Debug.Log("Unit Cancel");
-      RemoveCounter();
     }
   }
 
@@ -128,32 +126,16 @@ public class BtnShop : MonoBehaviour {
     OnCooldownFinished();
   }
 
-  private void OnCooldownFinished() {
+  public void OnCooldownFinished() {
     if ((_shopButtonData.Category is ShopButtonData.ShopCategory.Building or ShopButtonData.ShopCategory.Defense)) {
       statusObjectToBuild.SetActive(false);
       statusObjectReadyBuild.SetActive(true);
       statusObjectCancelBuild.SetActive(false);
     } else {
       Debug.Log("Unit Ready");
-      RemoveCounter();
       if (counter != 0) {
         StartCooldown(_shopButtonData.ShopBuildingBuildDuration);
       }
     }
   }
-
-  private void AddCounter() {
-    if (counter < 30) { // TODO: move the number to master data
-      counter++;
-      Count.text = counter.ToString();
-    }
-  }
-
-  private void RemoveCounter() {
-    if (counter > 0) {
-      counter--;
-      Count.text = counter.ToString();
-    }
-  }
-
 }

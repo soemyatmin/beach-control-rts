@@ -1,32 +1,62 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CheckNearByBuilding : MonoBehaviour {
+  private Renderer[] renderers;
+  private static readonly int OverlayColorID = Shader.PropertyToID("_OverlayColor");
+  private static readonly int UseTwinkleID = Shader.PropertyToID("_UseTwinkle");
+  private static readonly int TwinkleSpeedID = Shader.PropertyToID("_TwinkleSpeed");
+  private static readonly int MinStrengthID = Shader.PropertyToID("_MinStrength");
+  private static readonly int MaxStrengthID = Shader.PropertyToID("_MaxStrength");
+  private BoxCollider buildingCollider;
 
-  public bool CheckingBuildingAllowedBuild() {
-    Collider[] m_HitDetect = Physics.OverlapBox(transform.position + new Vector3(0, GetComponent<BoxCollider>().center.y, 0),
-      new Vector3(GetComponent<BoxCollider>().size.x, GetComponent<BoxCollider>().size.y, GetComponent<BoxCollider>().size.z) / 2,
-      Quaternion.identity);
-    if (m_HitDetect.Length > 0) {
-      for (int i = 0; i < m_HitDetect.Length; i++) {
-        if (m_HitDetect[i].tag == "building") {
-          return false;
-        }
+  public float placementPadding = 1f;
+
+  void Awake() {
+    renderers = GetComponentsInChildren<Renderer>();
+    buildingCollider = GetComponent<BoxCollider>();
+  }
+
+  public bool IsPlacementValid() {
+    Vector3 clearanceAreaSize = buildingCollider.size + new Vector3(placementPadding * 2, 0, placementPadding * 2);
+
+    Collider[] hits = Physics.OverlapBox(transform.position, clearanceAreaSize / 2, Quaternion.identity, LayerMask.GetMask("Building"));
+
+    return hits.Length == 0;
+  }
+
+  public void SetHighlight(Color color, float speed, float minAlpha, float maxAlpha, bool useTwinkle) {
+    SetMaterialProperty(mat => {
+      mat.SetColor(OverlayColorID, new Color(color.r, color.g, color.b, 0));
+      mat.SetFloat(UseTwinkleID, useTwinkle ? 1.0f : 0.0f);
+      mat.SetFloat(TwinkleSpeedID, speed);
+      mat.SetFloat(MinStrengthID, minAlpha);
+      mat.SetFloat(MaxStrengthID, maxAlpha);
+    });
+  }
+
+  private void SetMaterialProperty(System.Action<Material> setPropertyAction) {
+    foreach (var rend in renderers) {
+      foreach (var mat in rend.materials) {
+        setPropertyAction(mat);
       }
     }
-    return true;
   }
 
   public void BuildAction() {
     GetComponent<Collider>().enabled = true;
+    gameObject.layer = LayerMask.NameToLayer("Building");
+    gameObject.tag = "building";
+    SetHighlight(Color.clear, 0, 0, 0, false);
   }
 
   private void OnDrawGizmos() {
-    Gizmos.color = Color.yellow;
+    if (buildingCollider == null) return;
 
-    Gizmos.DrawWireCube(transform.position + new Vector3(0, GetComponent<BoxCollider>().center.y, 0),
-      new Vector3(GetComponent<BoxCollider>().size.x, GetComponent<BoxCollider>().size.y, GetComponent<BoxCollider>().size.z));
+    Gizmos.color = Color.yellow;
+    Gizmos.DrawWireCube(transform.position, buildingCollider.size);
+
+    Gizmos.color = Color.cyan;
+    Vector3 clearanceSize = buildingCollider.size + new Vector3(placementPadding * 2, 0, placementPadding * 2);
+    Gizmos.DrawWireCube(transform.position, clearanceSize);
   }
 }

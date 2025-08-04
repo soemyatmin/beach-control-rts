@@ -4,103 +4,120 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class BuildingController : MonoBehaviour {
-  // TODO: get from Resource Loader
-  public GameObject building;
-  public GameObject home;
+  [Header("Placement Settings")]
+  [SerializeField] private LayerMask groundLayerMask;
 
-  GameObject PlantedBuilding = null;
-  RaycastHit hit;
-  Ray ray;
+  [Header("Twinkle - Placeable (Green)")]
+  [SerializeField] private float placeableTwinkleSpeed = 10f;
+  [SerializeField] [Range(0, 1)] private float placeableMinAlpha = 0.2f;
+  [SerializeField] [Range(0, 1)] private float placeableMaxAlpha = 0.5f;
 
-  public LayerMask groundask;
+  [Header("Twinkle - Unplaceable (Red)")]
+  [SerializeField] private float unplaceableTwinkleSpeed = 25f;
+  [SerializeField] [Range(0, 1)] private float unplaceableMinAlpha = 0.3f;
+  [SerializeField] [Range(0, 1)] private float unplaceableMaxAlpha = 0.7f;
 
-  public bool buildingInProgress = false;
+  private GameObject objectToPlace;
+  private CheckNearByBuilding objectChecker;
+  private Camera mainCamera;
+  private bool lastPlacementValidity = true;
+  private Dictionary<int, BuildingData> buildingDataDictionary;
 
-  private ShopButtonData currentlyBuildingShopButton;
   public void Init() {
-    // TODO: Load buidling master data
-    //throw new System.NotImplementedException();
+    // TODO: Load building master data
+
+    buildingDataDictionary = new Dictionary<int, BuildingData>();
+
+    List<BuildingData> masterList = MasterData.Instance.GetMasterBuildingData();
+
+    foreach (var data in masterList) {
+      if (!buildingDataDictionary.TryAdd(data.ID, data)) {
+        Debug.LogWarning($"Duplicate Building ID {data.ID} found in MasterData!");
+      }
+    }
+  }
+
+  private void Start() {
+    mainCamera = Camera.main;
   }
 
   void Update() {
-    if (Input.GetKeyDown(KeyCode.Z)) {
-      if (PlantedBuilding == null) {
-        PlantedBuilding = Instantiate(building);
+    if (objectToPlace != null) {
+      if (Input.GetMouseButtonDown(1)) {
+        CancelPlacement();
+        return;
       }
-    }
-
-    if (Input.GetKeyDown(KeyCode.H)) {
-      if (PlantedBuilding == null) {
-        PlantedBuilding = Instantiate(home);
-      }
-    }
-
-    if (PlantedBuilding != null) {
-      if (EventSystem.current.IsPointerOverGameObject()) return;
-
-      RaycastHit hit;
-      Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-      if (Physics.Raycast(ray, out hit, 1000f, LayerMask.GetMask("Ground"))) {
-        if (hit.transform.tag == "ground") {
-          //PlantedBuilding.transform.position = hit.point;
-          //Collider[] m_HitDetect = Physics.OverlapBox(hit.point + new Vector3(0, 1.5f, 0), new Vector3(8, 3, 8) / 2, Quaternion.identity, LayerMask.GetMask("Default"));
-          Vector3 point = new Vector3(Mathf.Round(hit.point.x), 0, Mathf.Round(hit.point.z));
-          PlantedBuilding.transform.position = point;
-          // if (m_HitDetect.Length == 0) {  
-          // } else if (m_HitDetect.Length > 0) {
-          //     Debug.Log(m_HitDetect.Length);
-          //     for (int i = 0; i < m_HitDetect.Length; i++) {
-          //         Vector3 overlapObjPoint = m_HitDetect[i].transform.position;
-          //         float fx = Mathf.Abs(overlapObjPoint.x - hit.point.x);
-          //         float fz = Mathf.Abs(overlapObjPoint.z - hit.point.z);
-          //         bool isXBigger = fx > fz;
-          //         Vector3 targetPos = Vector3.zero;
-          //         if (overlapObjPoint.z > hit.point.z && !isXBigger) {
-          //             targetPos = overlapObjPoint + m_HitDetect[i].transform.forward * -8f;
-          //             targetPos.x = hit.point.x;
-          //         } else if (overlapObjPoint.z < hit.point.z && !isXBigger) {
-          //             targetPos = overlapObjPoint + m_HitDetect[i].transform.forward * 8f;
-          //             targetPos.x = hit.point.x;
-          //         } else if (overlapObjPoint.x > hit.point.x && isXBigger) {
-          //             targetPos = overlapObjPoint + m_HitDetect[i].transform.right * -8f;
-          //             targetPos.z = hit.point.z;
-          //         } else if (overlapObjPoint.x < hit.point.x && isXBigger) {
-          //             targetPos = overlapObjPoint + m_HitDetect[i].transform.right * 8f;
-          //             targetPos.z = hit.point.z;
-          //         }
-          //         if (isOkay(targetPos)) {
-          //             PlantedBuilding.transform.position = targetPos;
-          //             break;
-          //         }
-          //     }
-        }
-      }
-    }
-
-    if (Input.GetMouseButtonUp(0)) {
-      // check allow plant here
-      if (PlantedBuilding != null) {
-        if (PlantedBuilding.GetComponent<CheckNearByBuilding>().CheckingBuildingAllowedBuild()) {
-          PlantedBuilding.GetComponent<CheckNearByBuilding>().BuildAction();
-          PlantedBuilding = null;
-          CanvasManager.Instance.BuildingTrainingList().ResetBuildComplete(currentlyBuildingShopButton);
+      FollowMouseAndApplyHighlight();
+      if (Input.GetMouseButtonUp(0) && !EventSystem.current.IsPointerOverGameObject()) {
+        if (objectChecker.IsPlacementValid()) {
+          PlaceBuilding();
         }
       }
     }
   }
 
-  public void BuildBuilding(ShopButtonData shopButtonData) {
-    currentlyBuildingShopButton = shopButtonData;
-    if (PlantedBuilding == null) {
-      PlantedBuilding = Instantiate(building);
+  public void BuildBuildingFromUI(ShopButtonData data) {
+    if (data == null) return;
+    if (objectToPlace != null) CancelPlacement();
+
+    BuildingData buildingData = GetBuildingData(data.ID);
+    if (buildingData?.ModelGameObject == null) return;
+
+    objectToPlace = Instantiate(buildingData.ModelGameObject);
+    objectChecker = objectToPlace.GetComponent<CheckNearByBuilding>();
+
+    objectChecker.placementPadding = buildingData.PlacementPadding;
+
+    BoxCollider bc = objectToPlace.GetComponent<BoxCollider>();
+    if (bc != null) {
+      bc.size = new Vector3(buildingData.BuildingGridX, bc.size.y, buildingData.BuildingGridY);
     }
-    // TODO: Search by id to get building ID
+
+    objectToPlace.GetComponent<Collider>().enabled = false;
+    objectToPlace.layer = 0;
+
+    FollowMouseAndApplyHighlight();
+    lastPlacementValidity = !objectChecker.IsPlacementValid();
+    ApplyHighlightState(objectChecker.IsPlacementValid());
   }
 
+  private BuildingData GetBuildingData(int id) {
+    if (buildingDataDictionary.TryGetValue(id, out BuildingData data)) {
+      return data;
+    }
+    Debug.LogError($"BuildingData with ID {id} not found!");
+    return null;
+  }
 
-  // public bool isOkay(Vector3 point) {
-  //     Collider[] m_HitDetect = Physics.OverlapBox(point, new Vector3(7.9f, 3f, 7.9f) / 2, Quaternion.identity, LayerMask.GetMask("Default"));
-  //     return m_HitDetect.Length == 0;
-  // }
+  private void FollowMouseAndApplyHighlight() {
+    Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+    if (Physics.Raycast(ray, out RaycastHit hit, 1000f, groundLayerMask)) {
+      objectToPlace.transform.position = new Vector3(Mathf.Round(hit.point.x), 0, Mathf.Round(hit.point.z));
+      bool isCurrentlyValid = objectChecker.IsPlacementValid();
+      if (isCurrentlyValid != lastPlacementValidity) {
+        ApplyHighlightState(isCurrentlyValid);
+        lastPlacementValidity = isCurrentlyValid;
+      }
+    }
+  }
 
+  private void ApplyHighlightState(bool isValid) {
+    if (isValid) { objectChecker.SetHighlight(Color.green, placeableTwinkleSpeed, placeableMinAlpha, placeableMaxAlpha, true); } else {
+      objectChecker.SetHighlight(Color.red, unplaceableTwinkleSpeed, unplaceableMinAlpha, unplaceableMaxAlpha, true);
+    }
+  }
+
+  private void PlaceBuilding() {
+    objectChecker.BuildAction();
+    objectToPlace = null;
+    objectChecker = null;
+  }
+
+  private void CancelPlacement() {
+    if (objectToPlace == null) return;
+    objectChecker.SetHighlight(Color.clear, 0, 0, 0, false);
+    Destroy(objectToPlace);
+    objectToPlace = null;
+    objectChecker = null;
+  }
 }
