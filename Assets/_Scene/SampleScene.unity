@@ -1382,12 +1382,38 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7193568135505421837, guid: dbc665f40bd2b754ca7544521fb9a8bc,
+        type: 3}
+      propertyPath: placementOpacity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7193568135505421837, guid: dbc665f40bd2b754ca7544521fb9a8bc,
+        type: 3}
+      propertyPath: placeableMinAlpha
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7193568135505421837, guid: dbc665f40bd2b754ca7544521fb9a8bc,
+        type: 3}
+      propertyPath: unplaceableMinAlpha
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7193568135505421837, guid: dbc665f40bd2b754ca7544521fb9a8bc,
+        type: 3}
+      propertyPath: groundLayerMask.m_Bits
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 7193568135505421837, guid: dbc665f40bd2b754ca7544521fb9a8bc,
+        type: 3}
+      propertyPath: invalidOverlapThreshold
+      value: 0.01
+      objectReference: {fileID: 0}
     - target: {fileID: 8309780914982838434, guid: dbc665f40bd2b754ca7544521fb9a8bc,
         type: 3}
       propertyPath: m_Name
       value: GameManager
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3229465330447489778, guid: dbc665f40bd2b754ca7544521fb9a8bc, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

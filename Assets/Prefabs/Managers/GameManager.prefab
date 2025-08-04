@@ -78,13 +78,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc06ec7ff9e1743418137ce5f364f651, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  building: {fileID: 5245528701770918391, guid: f2da1ee14fae6884398d9123d0f8567c,
-    type: 3}
-  home: {fileID: 4038220009665689486, guid: 5170916123bdafc4d99548589fb61d1f, type: 3}
-  groundask:
+  groundLayerMask:
     serializedVersion: 2
     m_Bits: 256
-  buildingInProgress: 0
+  placementOpacity: 1
+  placeableTwinkleSpeed: 10
+  placeableMinStrength: 0.3
+  placeableMaxStrength: 0.6
+  unplaceableTwinkleSpeed: 25
+  unplaceableMinStrength: 0.4
+  unplaceableMaxStrength: 0.8
 --- !u!1 &8309780914982838434
 GameObject:
   m_ObjectHideFlags: 0
