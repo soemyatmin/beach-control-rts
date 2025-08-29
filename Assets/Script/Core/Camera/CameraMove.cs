@@ -4,78 +4,86 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class CameraMove : MonoBehaviour {
+  private bool isCameraLocked = false;
+  [Header("Camera Positioning")]
+  public Vector3 positionOffset;
+  public Vector3 rotationOffset;
 
-  public GameObject[] Buttons;
-  public float CameraMovementSpeed;
+  [Header("Movement Settings")]
+  public float panSpeed = 30f;
+  public float panBorderThickness = 15f;
+  public bool useEdgePanning = true;
 
-  ScreenPosition screenPosition = ScreenPosition.None;
-  Vector3 moveDir;
+  private Transform cameraTransform;
 
-  [System.Serializable]
-  public enum ScreenPosition {
-    Up,
-    Down,
-    Left,
-    Right,
-    None
-  };
+  private void OnValidate() {
+    if (cameraTransform == null) {
+      cameraTransform = GetComponentInChildren<Camera>()?.transform;
+    }
+
+    if (cameraTransform != null) {
+      cameraTransform.localPosition = positionOffset;
+      cameraTransform.localEulerAngles = rotationOffset;
+    }
+  }
 
   void Start() {
-    moveDir = Vector3.zero;
-    for (int i = 0; i < Buttons.Length; i++) {
-      HoverTrigger(Buttons[i]);
-      HoverTriggerStop(Buttons[i]);
+    cameraTransform = transform.GetChild(0);
+    if (cameraTransform != null) {
+      cameraTransform.localPosition = positionOffset;
+      cameraTransform.localEulerAngles = rotationOffset;
+    } else {
+      Debug.LogError("RTSCamera script requires a child Camera object.", this);
     }
   }
 
-  void Update() {
-    switch (screenPosition) {
-      case ScreenPosition.Up:
-        moveDir = transform.forward;
-        break;
-      case ScreenPosition.Down:
-        moveDir = -transform.forward;
-        break;
-      case ScreenPosition.Left:
-        moveDir = -transform.right;
-        break;
-      case ScreenPosition.Right:
-        moveDir = transform.right;
-        break;
-      case ScreenPosition.None:
-        moveDir = Vector3.zero;
-        break;
+  void LateUpdate() {
+#if UNITY_EDITOR
+    if (Input.GetKeyDown(KeyCode.Escape)) {
+      isCameraLocked = !isCameraLocked;
+
+      if (isCameraLocked) {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+      }
     }
-    transform.localPosition += moveDir * CameraMovementSpeed * Time.deltaTime;
+
+    if (isCameraLocked) {
+      return;
+    }
+#endif
+
+    if (Input.GetKeyDown(KeyCode.F1)) {
+      Vector3 startPos = new Vector3(155f, 32f, 117f);
+      Vector3 delta = startPos - transform.position;
+      transform.Translate(delta, Space.World);
+    }
+
+    HandleMovement();
   }
 
+  void HandleMovement() {
+    Vector3 moveDirection = Vector3.zero;
 
-  public void HoverTrigger(GameObject fmitem) {
-    EventTrigger pointerHoverTrigger = fmitem.GetComponent<EventTrigger>();
-    EventTrigger.Entry yourNewEntry = new EventTrigger.Entry();
-    yourNewEntry.eventID = EventTriggerType.PointerEnter;
-    pointerHoverTrigger.triggers.Add(yourNewEntry);
-    yourNewEntry.callback.AddListener((eventData) => {
-      CameraViewMove(fmitem.GetComponent<CameraMovingBtn>().ButtonPosition);
-    });
-  }
+    moveDirection.x += Input.GetAxis("Horizontal");
+    moveDirection.z += Input.GetAxis("Vertical");
 
-  public void HoverTriggerStop(GameObject fmitem) {
-    EventTrigger pointerHoverTrigger = fmitem.GetComponent<EventTrigger>();
-    EventTrigger.Entry yourNewEntry = new EventTrigger.Entry();
-    yourNewEntry.eventID = EventTriggerType.PointerExit;
-    pointerHoverTrigger.triggers.Add(yourNewEntry);
-    yourNewEntry.callback.AddListener((eventData) => {
-      CameraViewStop();
-    });
-  }
+    if (useEdgePanning) {
+      if (Input.mousePosition.y >= Screen.height - panBorderThickness)
+        moveDirection.z += 1;
+      if (Input.mousePosition.y <= panBorderThickness)
+        moveDirection.z -= 1;
+      if (Input.mousePosition.x >= Screen.width - panBorderThickness)
+        moveDirection.x += 1;
+      if (Input.mousePosition.x <= panBorderThickness)
+        moveDirection.x -= 1;
+    }
 
+    if (Input.GetMouseButton(2)) {
+      moveDirection.x -= Input.GetAxis("Mouse X") * 2.5f;
+      moveDirection.z -= Input.GetAxis("Mouse Y") * 2.5f;
+    }
 
-  public void CameraViewMove(ScreenPosition screenPosition) {
-    this.screenPosition = screenPosition;
-  }
-
-  public void CameraViewStop() {
-    screenPosition = ScreenPosition.None;
+    transform.Translate(moveDirection.normalized * panSpeed * Time.deltaTime, Space.Self);
   }
 }
